@@ -14,24 +14,37 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import time
 from lib import sensors
 
 
 def main():
-    # Initialize the system
-    sensors.initialize_gyro()
-    sensors.initialize_compass()
+    # Initialize the sensor module
+    sensors.initialize()
 
-    while True:
-        # Read sensor data
-        gyro_data = sensors.read_gyro()
-        compass_data = sensors.read_compass()
+    try:
+        while True:
+            # Get accelerometer and gyroscope data
+            accel_data, gyro_data = sensors.read_data()
 
-        # Perform dead reckoning
-        angle = sensors.perform_dead_reckoning(gyro_data)
+            # Print the data (or you can process or send it wherever needed)
+            print("Accelerometer Data:", accel_data)
+            print("Gyroscope Data:", gyro_data)
 
-        # More code here...
+            # You can add more logic here, like checking if the UAV is
+            # operating within safe parameters, and reacting accordingly
+
+            time.sleep(1)  # Adjust the delay as needed
+
+    except KeyboardInterrupt:
+        print("Program stopped by user.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        # Clean up and shut down
+        sensors.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
+

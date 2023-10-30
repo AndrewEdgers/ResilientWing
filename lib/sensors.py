@@ -76,19 +76,23 @@ class MPU6050:
         return self._get_rotation(accel_data['x'], accel_data['y'], accel_data['z'])
 
 
-if __name__ == "__main__":
+def main():
     sensor = MPU6050()
+    try:
+        while True:
+            gyro_data = sensor.get_gyro_data()
+            accel_data = sensor.get_accel_data()
+            rotation = sensor.get_rotation_angles()
 
-    while True:
-        gyro_data = sensor.get_gyro_data()
-        accel_data = sensor.get_accel_data()
-        rotation = sensor.get_rotation_angles()
+            print("Gyroscope Data (°/s): X: {:.3f}, Y: {:.3f}, Z: {:.3f}".format(gyro_data['x'], gyro_data['y'], gyro_data['z']))
+            print("Accelerometer Data (g): X: {:.3f}, Y: {:.3f}, Z: {:.3f}".format(accel_data['x'], accel_data['y'], accel_data['z']))
+            print("Rotation Angles (°): X: {:.3f}, Y: {:.3f}".format(rotation['x'], rotation['y']))
+            print("-------------------------------------------------------")
 
-        print("Gyroscope Data (°/s): X: {:.3f}, Y: {:.3f}, Z: {:.3f}".format(gyro_data['x'], gyro_data['y'],
-                                                                             gyro_data['z']))
-        print("Accelerometer Data (g): X: {:.3f}, Y: {:.3f}, Z: {:.3f}".format(accel_data['x'], accel_data['y'],
-                                                                               accel_data['z']))
-        print("Rotation Angles (°): X: {:.3f}, Y: {:.3f}".format(rotation['x'], rotation['y']))
-        print("-------------------------------------------------------")
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Sensor test terminated by user.")
 
-        time.sleep(1)
+
+if __name__ == "__main__":
+    main()
