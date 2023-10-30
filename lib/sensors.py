@@ -76,6 +76,40 @@ class MPU6050:
         return self._get_rotation(accel_data['x'], accel_data['y'], accel_data['z'])
 
 
+_sensor_instance = None
+
+def initialize():
+    """
+    Initializes the sensor for use.
+    """
+    global _sensor_instance
+    _sensor_instance = MPU6050()
+
+
+def read_data():
+    """
+    Reads data from the sensor.
+    :return: tuple containing accelerometer and gyroscope data.
+    """
+    global _sensor_instance
+    if _sensor_instance is None:
+        raise Exception("Sensor is not initialized. Call initialize() first.")
+    
+    accel_data = _sensor_instance.get_accel_data()
+    gyro_data = _sensor_instance.get_gyro_data()
+    
+    return accel_data, gyro_data
+
+def shutdown():
+    """
+    Shutdown the sensor. Currently, the MPU6050 doesn't have a specific shutdown method, 
+    so this function is left as a placeholder for any cleanup you might want to add in the future.
+    """
+    pass  # No specific shutdown procedure for MPU6050 in this setup, but kept for future additions or modifications.
+
+
+
+
 def main():
     sensor = MPU6050()
     try:
