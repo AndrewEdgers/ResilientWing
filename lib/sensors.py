@@ -78,6 +78,7 @@ class MPU6050:
 
 _sensor_instance = None
 
+
 def initialize():
     """
     Initializes the sensor for use.
@@ -94,20 +95,19 @@ def read_data():
     global _sensor_instance
     if _sensor_instance is None:
         raise Exception("Sensor is not initialized. Call initialize() first.")
-    
+
     accel_data = _sensor_instance.get_accel_data()
     gyro_data = _sensor_instance.get_gyro_data()
-    
+
     return accel_data, gyro_data
+
 
 def shutdown():
     """
-    Shutdown the sensor. Currently, the MPU6050 doesn't have a specific shutdown method, 
+    Shutdown the sensor. Currently, the MPU6050 doesn't have a specific shutdown method,
     so this function is left as a placeholder for any cleanup you might want to add in the future.
     """
     pass  # No specific shutdown procedure for MPU6050 in this setup, but kept for future additions or modifications.
-
-
 
 
 def main():
@@ -118,8 +118,10 @@ def main():
             accel_data = sensor.get_accel_data()
             rotation = sensor.get_rotation_angles()
 
-            print("Gyroscope Data (°/s): X: {:.3f}, Y: {:.3f}, Z: {:.3f}".format(gyro_data['x'], gyro_data['y'], gyro_data['z']))
-            print("Accelerometer Data (g): X: {:.3f}, Y: {:.3f}, Z: {:.3f}".format(accel_data['x'], accel_data['y'], accel_data['z']))
+            print("Gyroscope Data (°/s): X: {:.3f}, Y: {:.3f}, Z: {:.3f}".format(gyro_data['x'], gyro_data['y'],
+                                                                                 gyro_data['z']))
+            print("Accelerometer Data (g): X: {:.3f}, Y: {:.3f}, Z: {:.3f}".format(accel_data['x'], accel_data['y'],
+                                                                                   accel_data['z']))
             print("Rotation Angles (°): X: {:.3f}, Y: {:.3f}".format(rotation['x'], rotation['y']))
             print("-------------------------------------------------------")
 
