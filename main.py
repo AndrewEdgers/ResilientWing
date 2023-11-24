@@ -15,24 +15,25 @@ limitations under the License.
 """
 
 import time
-from lib import sensors
+from lib import sensors, visualization
 
 
 def main():
     # Initialize the sensor module
     sensors.initialize()
+    visualization.initialize()
 
     try:
         while True:
             # Get accelerometer and gyroscope data
-            accel_data, gyro_data = sensors.read_data()
+            # accel_data, gyro_data = sensors.read_data()
+            ax, ay, az = sensors.read_data()
 
-            # Print the data (or you can process or send it wherever needed)
-            print("Accelerometer Data:", accel_data)
-            print("Gyroscope Data:", gyro_data)
+            # Print the data
+            print("Accelerometer and Gyroscope Data:", ax, ay, az)
 
-            # You can add more logic here, like checking if the UAV is
-            # operating within safe parameters, and reacting accordingly
+            visualization.update_visualization(ax, ay, az)
+            visualization.check_for_exit()
 
             time.sleep(1)  # Adjust the delay as needed
 
@@ -43,6 +44,7 @@ def main():
     finally:
         # Clean up and shut down
         sensors.shutdown()
+        visualization.shutdown()
 
 
 if __name__ == "__main__":
