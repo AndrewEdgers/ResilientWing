@@ -23,112 +23,139 @@ ax = ay = az = 0.0
 yaw_mode = False
 
 
+def resize(width, height):
+    if height == 0:
+        height = 1
+    glViewport(0, 0, width, height)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(45, 1.0 * width / height, 0.1, 100.0)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+
+
 def initialize():
-    """
-    Initialize the visualization module
-    :return:
-    """
     pygame.init()
     display = (640, 480)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-    gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-    glTranslatef(0.0, 0.0, -5)
+    pygame.display.set_caption("UAV Visualization")
+    resize(*display)
+    glShadeModel(GL_SMOOTH)
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearDepth(1.0)
+    glEnable(GL_DEPTH_TEST)
+    glDepthFunc(GL_LEQUAL)
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
 
-def update_visualization(new_ax, new_ay, new_az):
-    """
-    Update the visualization with new data
-    :param new_ax: New ax value
-    :param new_ay: New ay value
-    :param new_az: New az value
-    :return:
-    """
-    global ax, ay, az
-    ax, ay, az = new_ax, new_ay, new_az
-    draw()
-    pygame.display.flip()
+def draw_text(position, textString):
+    font = pygame.font.Font(None, 64)
+    textSurface = font.render(textString, True, (255, 255, 255, 255))
+    textData = pygame.image.tostring(textSurface, "RGBA", True)
+    glWindowPos2d(*position)
+    glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
 
 
-def draw():
-    # Clear the screen and depth buffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glLoadIdentity()  # Reset the view
-
-    # Translate and rotate the model based on sensor data
-    # Example translation and rotation (you'll adjust these based on your ax, ay, az values)
-    glTranslatef(0.0, 0.0, -5.0)
-    glRotatef(ax, 1.0, 0.0, 0.0)  # Rotate by ax degrees around the x-axis
-    glRotatef(ay, 0.0, 1.0, 0.0)  # Rotate by ay degrees around the y-axis
-    glRotatef(az, 0.0, 0.0, 1.0)  # Rotate by az degrees around the z-axis
-
-    # Begin drawing a cube
+def draw_cube():
+    """Draw a simple cube with different colors for each face."""
     glBegin(GL_QUADS)
 
-    # Front face (z-positive)
+    # Front face (in red)
     glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(0.5, 0.5, 0.5)
-    glVertex3f(-0.5, 0.5, 0.5)
-    glVertex3f(-0.5, -0.5, 0.5)
-    glVertex3f(0.5, -0.5, 0.5)
+    glVertex3f(-1.0, -1.0, 1.0)
+    glVertex3f(1.0, -1.0, 1.0)
+    glVertex3f(1.0, 1.0, 1.0)
+    glVertex3f(-1.0, 1.0, 1.0)
 
-    # Back face (z-negative)
+    # Back face (in green)
     glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(0.5, -0.5, -0.5)
-    glVertex3f(-0.5, -0.5, -0.5)
-    glVertex3f(-0.5, 0.5, -0.5)
-    glVertex3f(0.5, 0.5, -0.5)
+    glVertex3f(-1.0, -1.0, -1.0)
+    glVertex3f(-1.0, 1.0, -1.0)
+    glVertex3f(1.0, 1.0, -1.0)
+    glVertex3f(1.0, -1.0, -1.0)
 
-    # Left face (x-negative)
-    glColor3f(1.0, 0.0, 0.0)
-    glVertex3f(1.0, 0.2, 1.0)
-    glVertex3f(-1.0, 0.2, 1.0)
-    glVertex3f(-1.0, -0.2, 1.0)
-    glVertex3f(1.0, -0.2, 1.0)
+    # Top face (in blue)
+    glColor3f(0.0, 0.0, 1.0)  # Blue
+    glVertex3f(-1.0, 1.0, -1.0)
+    glVertex3f(-1.0, 1.0, 1.0)
+    glVertex3f(1.0, 1.0, 1.0)
+    glVertex3f(1.0, 1.0, -1.0)
 
-    # Right face (x-positive)
-    glColor3f(1.0, 1.0, 0.0)
-    glVertex3f(1.0, -0.2, -1.0)
-    glVertex3f(-1.0, -0.2, -1.0)
-    glVertex3f(-1.0, 0.2, -1.0)
-    glVertex3f(1.0, 0.2, -1.0)
+    # Bottom face (in orange)
+    glColor3f(1.0, 0.5, 0.0)  # Orange
+    glVertex3f(-1.0, -1.0, -1.0)
+    glVertex3f(1.0, -1.0, -1.0)
+    glVertex3f(1.0, -1.0, 1.0)
+    glVertex3f(-1.0, -1.0, 1.0)
 
-    # Top face (y-positive)
-    glColor3f(0.0, 0.0, 1.0)
-    glVertex3f(-1.0, 0.2, 1.0)
-    glVertex3f(-1.0, 0.2, -1.0)
-    glVertex3f(-1.0, -0.2, -1.0)
-    glVertex3f(-1.0, -0.2, 1.0)
+    # Right face (in purple)
+    glColor3f(1.0, 0.0, 1.0)  # Purple
+    glVertex3f(1.0, -1.0, -1.0)
+    glVertex3f(1.0, 1.0, -1.0)
+    glVertex3f(1.0, 1.0, 1.0)
+    glVertex3f(1.0, -1.0, 1.0)
 
-    # Bottom face (y-negative)
-    glColor3f(1.0, 0.0, 1.0)
-    glVertex3f(1.0, 0.2, -1.0)
-    glVertex3f(1.0, 0.2, 1.0)
-    glVertex3f(1.0, -0.2, 1.0)
-    glVertex3f(1.0, -0.2, -1.0)
+    # Left face (in yellow)
+    glColor3f(1.0, 1.0, 0.0)  # Yellow
+    glVertex3f(-1.0, -1.0, -1.0)
+    glVertex3f(-1.0, -1.0, 1.0)
+    glVertex3f(-1.0, 1.0, 1.0)
+    glVertex3f(-1.0, 1.0, -1.0)
 
     glEnd()
 
-    # Flush drawing commands to the graphics card
-    glFlush()
+
+def draw():
+    """
+    Render the scene, which includes the cube.
+    """
+    global ax, ay, az
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
+
+    # Camera transformation (for this example, we just move the camera a bit back)
+    glTranslatef(0.0, 0.0, -5.0)
+
+    # Apply rotations based on sensor data
+    glRotatef(ax, 1.0, 0.0, 0.0)  # Roll
+    glRotatef(ay, 0.0, 1.0, 0.0)  # Pitch
+    glRotatef(az, 0.0, 0.0, 1.0)  # Yaw
+
+    # Draw the cube
+    draw_cube()
+
+    pygame.display.flip()
+
+
+def update_visualization(new_ax, new_ay, new_az):
+    global ax, ay, az
+    ax, ay, az = new_ax, new_ay, new_az
 
 
 def check_for_exit():
-    """
-    Check for exit event
-    :return:
-    """
-    global yaw_mode
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            quit()
-        if event.type == KEYDOWN and event.key == K_z:
-            yaw_mode = not yaw_mode
+            return True
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            return True
+    return False
 
 
 def shutdown():
-    """
-    Clean up and shut down the visualization module
-    :return:
-    """
     pygame.quit()
+
+
+def main():
+    initialize()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        draw()
+
+
+if __name__ == '__main__':
+    main()
