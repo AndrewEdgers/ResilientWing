@@ -26,17 +26,14 @@ def main():
 
     try:
         while True:
-            try:
-                accel_data, gyro_data = sensors.read_data()
-                print(f"Accelerometer Data: {accel_data}")
-                print(f"Gyroscope Data: {gyro_data}")
+            accel_data, gyro_data = sensors.read_data()
+            ax, ay, az = accel_data['x'], accel_data['y'], accel_data['z']
+            visualization.update_visualization(ax, ay, az)
+            visualization.draw()  # Ensure this is called each loop iteration
 
-                ax, ay, az = accel_data['x'], accel_data['y'], accel_data['z']
-                visualization.update_visualization(ax, ay, az)
-            except Exception as e:
-                print(f"Error processing data: {e}")
+            if visualization.check_for_exit():
+                break
 
-            visualization.check_for_exit()
             time.sleep(SENSOR_DELAY)
     except KeyboardInterrupt:
         print("Program stopped by user.")
