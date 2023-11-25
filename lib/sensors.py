@@ -30,10 +30,14 @@ class MPU6050:
     ACCEL_ZOUT = 0x3f
 
     def __init__(self, address=0x68, bus_num=1):
-        self.bus = smbus.SMBus(bus_num)
-        self.address = address
-        # Wake up sensor
-        self.bus.write_byte_data(self.address, self.POWER_MGMT_1, 0)
+        try:
+            self.bus = smbus.SMBus(bus_num)
+            self.address = address
+            # Wake up sensor
+            self.bus.write_byte_data(self.address, self.POWER_MGMT_1, 0)
+        except Exception as e:
+            print(f"Error initializing MPU6050: {e}")
+            raise
 
     def _read_word(self, adr):
         high = self.bus.read_byte_data(self.address, adr)
@@ -48,28 +52,40 @@ class MPU6050:
         return val
 
     def _get_rotation(self, x, y, z):
-        radians_x = math.atan2(y, self._dist(x, z))
-        radians_y = math.atan2(x, self._dist(y, z))
-        return {
-            'x': math.degrees(radians_x),
-            'y': -math.degrees(radians_y)
-        }
+        try:
+            radians_x = math.atan2(y, self._dist(x, z))
+            radians_y = math.atan2(x, self._dist(y, z))
+            return {
+                'x': math.degrees(radians_x),
+                'y': -math.degrees(radians_y)
+            }
+        except Exception as e:
+            print(f"Error calculating rotation: {e}")
+            raise
 
     @staticmethod
     def _dist(a, b):
         return math.sqrt(a * a + b * b)
 
     def get_gyro_data(self):
-        x = self._read_word_2c(self.GYRO_XOUT) / 131
-        y = self._read_word_2c(self.GYRO_YOUT) / 131
-        z = self._read_word_2c(self.GYRO_ZOUT) / 131
-        return {'x': x, 'y': y, 'z': z}
+        try:
+            x = self._read_word_2c(self.GYRO_XOUT) / 131
+            y = self._read_word_2c(self.GYRO_YOUT) / 131
+            z = self._read_word_2c(self.GYRO_ZOUT) / 131
+            return {'x': x, 'y': y, 'z': z}
+        except Exception as e:
+            print(f"Error reading gyroscope data: {e}")
+            raise
 
     def get_accel_data(self):
-        x = self._read_word_2c(self.ACCEL_XOUT) / 16384.0
-        y = self._read_word_2c(self.ACCEL_YOUT) / 16384.0
-        z = self._read_word_2c(self.ACCEL_ZOUT) / 16384.0
-        return {'x': x, 'y': y, 'z': z}
+        try:
+            x = self._read_word_2c(self.ACCEL_XOUT) / 16384.0
+            y = self._read_word_2c(self.ACCEL_YOUT) / 16384.0
+            z = self._read_word_2c(self.ACCEL_ZOUT) / 16384.0
+            return {'x': x, 'y': y, 'z': z}
+        except Exception as e:
+            print(f"Error reading accelerometer data: {e}")
+            raise
 
     def get_rotation_angles(self):
         accel_data = self.get_accel_data()

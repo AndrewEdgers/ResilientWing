@@ -17,32 +17,30 @@ limitations under the License.
 import time
 from lib import sensors, visualization
 
+SENSOR_DELAY = 1  # Sensor reading delay in seconds
+
 
 def main():
-    # Initialize the sensor module
     sensors.initialize()
     visualization.initialize()
 
     try:
         while True:
-            # Get accelerometer and gyroscope data
-            # accel_data, gyro_data = sensors.read_data()
-            ax, ay, az = sensors.read_data()
+            try:
+                accel_data, gyro_data = sensors.read_data()
+                print(f"Accelerometer Data: {accel_data}")
+                print(f"Gyroscope Data: {gyro_data}")
 
-            # Print the data
-            print("Accelerometer and Gyroscope Data:", ax, ay, az)
+                ax, ay, az = accel_data['x'], accel_data['y'], accel_data['z']
+                visualization.update_visualization(ax, ay, az)
+            except Exception as e:
+                print(f"Error processing data: {e}")
 
-            visualization.update_visualization(ax, ay, az)
             visualization.check_for_exit()
-
-            time.sleep(1)  # Adjust the delay as needed
-
+            time.sleep(SENSOR_DELAY)
     except KeyboardInterrupt:
         print("Program stopped by user.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
     finally:
-        # Clean up and shut down
         sensors.shutdown()
         visualization.shutdown()
 
