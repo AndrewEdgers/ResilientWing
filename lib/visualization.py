@@ -36,7 +36,7 @@ def resize(width, height):
 
 def initialize():
     pygame.init()
-    display = (640, 480)
+    display = (480, 360)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
     pygame.display.set_caption("UAV Visualization")
     resize(*display)
