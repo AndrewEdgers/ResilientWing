@@ -17,7 +17,7 @@ limitations under the License.
 import time
 from lib import sensors, visualization
 
-SENSOR_DELAY = 1  # Sensor reading delay in seconds
+SENSOR_DELAY = 0.1  # Sensor reading delay in seconds
 
 
 def main():
@@ -28,6 +28,8 @@ def main():
         while True:
             accel_data, gyro_data = sensors.read_data()
             ax, ay, az = accel_data['x'], accel_data['y'], accel_data['z']
+            # ax, ay, az = 45, 45, 45 # debug line
+            print(f"Updating visualization with: ax={ax}, ay={ay}, az={az}")
             visualization.update_visualization(ax, ay, az)
             visualization.draw()  # Ensure this is called each loop iteration
 

@@ -19,6 +19,8 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+import math
+
 ax = ay = az = 0.0
 yaw_mode = False
 
@@ -130,7 +132,16 @@ def draw():
 
 def update_visualization(new_ax, new_ay, new_az):
     global ax, ay, az
-    ax, ay, az = new_ax, new_ay, new_az
+    # ax, ay, az = new_ax, new_ay, new_az
+    # Apply a scaling factor if needed
+    scale_factor = 100 # Adjust as needed based on your sensor data range
+    # ax = new_ax * scale_factor
+    # ay = new_ay * scale_factor
+    # az = new_az * scale_factor
+    # Convert radians to degrees
+    ax = math.degrees(new_ax)
+    ay = math.degrees(new_ay)
+    az = math.degrees(new_az)
 
 
 def check_for_exit():
