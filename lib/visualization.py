@@ -22,7 +22,7 @@ from OpenGL.GLU import *
 import math
 
 ax = ay = az = 0.0
-yaw_mode = False
+yaw_mode = True
 
 
 def resize(width, height):
@@ -62,47 +62,41 @@ def draw_cube():
     """Draw a simple cube with different colors for each face."""
     glBegin(GL_QUADS)
 
-    # Front face (in red)
-    glColor3f(1.0, 0.0, 0.0)  # Red
-    glVertex3f(-1.0, -1.0, 1.0)
-    glVertex3f(1.0, -1.0, 1.0)
-    glVertex3f(1.0, 1.0, 1.0)
-    glVertex3f(-1.0, 1.0, 1.0)
+    glColor3f(0.0, 1.0, 0.0)
+    glVertex3f(1.0, 0.2, -1.0)
+    glVertex3f(-1.0, 0.2, -1.0)
+    glVertex3f(-1.0, 0.2, 1.0)
+    glVertex3f(1.0, 0.2, 1.0)
 
-    # Back face (in green)
-    glColor3f(0.0, 1.0, 0.0)  # Green
-    glVertex3f(-1.0, -1.0, -1.0)
-    glVertex3f(-1.0, 1.0, -1.0)
-    glVertex3f(1.0, 1.0, -1.0)
-    glVertex3f(1.0, -1.0, -1.0)
+    glColor3f(1.0, 0.5, 0.0)
+    glVertex3f(1.0, -0.2, 1.0)
+    glVertex3f(-1.0, -0.2, 1.0)
+    glVertex3f(-1.0, -0.2, -1.0)
+    glVertex3f(1.0, -0.2, -1.0)
 
-    # Top face (in blue)
-    glColor3f(0.0, 0.0, 1.0)  # Blue
-    glVertex3f(-1.0, 1.0, -1.0)
-    glVertex3f(-1.0, 1.0, 1.0)
-    glVertex3f(1.0, 1.0, 1.0)
-    glVertex3f(1.0, 1.0, -1.0)
+    glColor3f(1.0, 0.0, 0.0)
+    glVertex3f(1.0, 0.2, 1.0)
+    glVertex3f(-1.0, 0.2, 1.0)
+    glVertex3f(-1.0, -0.2, 1.0)
+    glVertex3f(1.0, -0.2, 1.0)
 
-    # Bottom face (in orange)
-    glColor3f(1.0, 0.5, 0.0)  # Orange
-    glVertex3f(-1.0, -1.0, -1.0)
-    glVertex3f(1.0, -1.0, -1.0)
-    glVertex3f(1.0, -1.0, 1.0)
-    glVertex3f(-1.0, -1.0, 1.0)
+    glColor3f(1.0, 1.0, 0.0)
+    glVertex3f(1.0, -0.2, -1.0)
+    glVertex3f(-1.0, -0.2, -1.0)
+    glVertex3f(-1.0, 0.2, -1.0)
+    glVertex3f(1.0, 0.2, -1.0)
 
-    # Right face (in purple)
-    glColor3f(1.0, 0.0, 1.0)  # Purple
-    glVertex3f(1.0, -1.0, -1.0)
-    glVertex3f(1.0, 1.0, -1.0)
-    glVertex3f(1.0, 1.0, 1.0)
-    glVertex3f(1.0, -1.0, 1.0)
+    glColor3f(0.0, 0.0, 1.0)
+    glVertex3f(-1.0, 0.2, 1.0)
+    glVertex3f(-1.0, 0.2, -1.0)
+    glVertex3f(-1.0, -0.2, -1.0)
+    glVertex3f(-1.0, -0.2, 1.0)
 
-    # Left face (in yellow)
-    glColor3f(1.0, 1.0, 0.0)  # Yellow
-    glVertex3f(-1.0, -1.0, -1.0)
-    glVertex3f(-1.0, -1.0, 1.0)
-    glVertex3f(-1.0, 1.0, 1.0)
-    glVertex3f(-1.0, 1.0, -1.0)
+    glColor3f(1.0, 0.0, 1.0)
+    glVertex3f(1.0, 0.2, -1.0)
+    glVertex3f(1.0, 0.2, 1.0)
+    glVertex3f(1.0, -0.2, 1.0)
+    glVertex3f(1.0, -0.2, -1.0)
 
     glEnd()
 
@@ -111,18 +105,19 @@ def draw():
     """
     Render the scene, which includes the cube.
     """
-    global ax, ay, az
+    global ax, ay, az, yaw_mode
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
     # Camera transformation (for this example, we just move the camera a bit back)
-    glTranslatef(0.0, 0.0, -5.0)
+    glTranslatef(0.0, 0.0, -7.0)
 
     # Apply rotations based on sensor data
-    glRotatef(ax, 1.0, 0.0, 0.0)  # Roll
-    glRotatef(ay, 0.0, 1.0, 0.0)  # Pitch
-    glRotatef(az, 0.0, 0.0, 1.0)  # Yaw
+    if yaw_mode:
+        glRotatef(az, 0.0, 1.0, 0.0)  # Yaw
+    glRotatef(ax, 1.0, 0.0, 0.0)  # Pitch
+    glRotatef(-1*ay, 0.0, 0.0, 1.0)  # Roll
 
     # Draw the cube
     draw_cube()
@@ -132,16 +127,18 @@ def draw():
 
 def update_visualization(new_ax, new_ay, new_az):
     global ax, ay, az
-    # ax, ay, az = new_ax, new_ay, new_az
+    ax, ay, az = new_ax, new_ay, new_az
+
     # Apply a scaling factor if needed
-    scale_factor = 100 # Adjust as needed based on your sensor data range
+    # scale_factor = 1 # Adjust as needed based on your sensor data range
     # ax = new_ax * scale_factor
     # ay = new_ay * scale_factor
     # az = new_az * scale_factor
+
     # Convert radians to degrees
-    ax = math.degrees(new_ax)
-    ay = math.degrees(new_ay)
-    az = math.degrees(new_az)
+    # ax = math.degrees(new_ax)
+    # ay = math.degrees(new_ay)
+    # az = math.degrees(new_az)
 
 
 def check_for_exit():
